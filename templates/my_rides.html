@@ -1,18 +1,23 @@
 <h2>My Offered Rides</h2>
 <ul>
-{% for ride in offered_rides %}
-  <li>Pickup: {{ ride.pickup_offer }}, Drop-off: {{ ride.dropoff_offer }}</li>
+{% if offered_rides %}
+  {% for ride in offered_rides %}
+    <li>Pickup: {{ ride.pickup }}, Drop-off: {{ ride.dropoff }}</li>
+  {% endfor %}
 {% else %}
   <p>No offered rides yet.</p>
-{% endfor %}
+{% endif %}
 </ul>
 
 <h2>My Requested Rides</h2>
 <ul>
-{% for ride in requested_rides %}
-  <li>Pickup: {{ ride.pickup }}, Drop-off: {{ ride.dropoff }}</li>
+{% if requested_rides %}
+  {% for ride in requested_rides %}
+    <li>Pickup: {{ ride.pickup }}, Drop-off: {{ ride.dropoff }}{% if ride.matched_ride_id %} — Matched with Ride ID: {{ ride.matched_ride_id }}{% endif %}</li>
+  {% endfor %}
 {% else %}
   <p>No requested rides yet.</p>
-{% endfor %}
+{% endif %}
 </ul>
+
 <a href="/">Back to Home</a>

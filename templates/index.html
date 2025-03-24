@@ -13,21 +13,21 @@
             padding: 0;
             background: linear-gradient(135deg, #f4f4f9, #e0f7fa);
         }
-
         header {
             background-color: #2c3e50;
             color: white;
-            padding: 20px;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
         }
-
         .welcome-msg {
             font-size: 20px;
         }
-
         nav ul {
             list-style-type: none;
             padding: 0;
@@ -35,97 +35,101 @@
             display: flex;
             gap: 20px;
         }
-
         nav ul li a {
             color: white;
             text-decoration: none;
             font-size: 18px;
             transition: color 0.3s ease;
         }
-
         nav ul li a:hover {
             color: #f1c40f;
         }
-
         main {
-            padding: 20px;
-            max-width: 1000px;
-            margin: 30px auto;
+            padding: 30px;
+            max-width: 1300px;
+            margin: 40px auto;
         }
-
         .form-container {
             display: flex;
             justify-content: space-between;
             gap: 30px;
             flex-wrap: wrap;
         }
-
         section {
             background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 48%;
-            transition: transform 0.2s ease;
+            border-radius: 16px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+            padding: 35px 30px;
+            width: 30%;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
-
         section:hover {
-            transform: translateY(-5px);
+            transform: translateY(-6px);
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.1);
         }
-
         section h2 {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             color: #2c3e50;
+            font-size: 26px;
         }
-
         label {
             display: block;
             font-size: 15px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            color: #333;
         }
-
         input[type="text"] {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 22px;
+            border-radius: 8px;
             border: 1px solid #ccc;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 14px;
         }
-
         input[type="text"]:focus {
             border-color: #3498db;
             outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.4);
         }
-
         button {
             background-color: #3498db;
             color: white;
-            padding: 12px 25px;
+            padding: 14px 28px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s ease;
+            font-size: 17px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
         }
-
         button:hover {
             background-color: #2980b9;
+            transform: scale(1.05);
         }
-
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
         footer {
             text-align: center;
-            padding: 15px;
+            padding: 18px;
             background-color: #2c3e50;
             color: white;
-            margin-top: 40px;
+            margin-top: 50px;
+            font-size: 15px;
         }
-
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .form-container {
                 flex-direction: column;
+                gap: 40px;
             }
-
             section {
                 width: 100%;
             }
@@ -136,7 +140,7 @@
 <body>
     <header>
         <div class="welcome-msg">
-            Welcome, {{ user.username }}!
+            Welcome back, {{ user.username }}! Ready to ride?
         </div>
         <nav>
             <ul>
@@ -148,30 +152,54 @@
 
     <main>
         <div class="form-container">
+            <!-- ✅ Corrected Ride Request Form -->
             <section id="ride-form">
                 <h2>Request a Ride</h2>
-                <form action="/search_rides" method="POST">
+                <form action="/request_ride" method="POST" onsubmit="return showRequestAlert()">
                     <label for="pickup">Pick-up Location:</label>
-                    <input type="text" id="pickup" name="pickup" placeholder="Enter pick-up location" required>
+                    <input type="text" id="pickup" name="pickup" placeholder="e.g., Times Square, NYC" required>
 
                     <label for="dropoff">Drop-off Location:</label>
-                    <input type="text" id="dropoff" name="dropoff" placeholder="Enter drop-off location" required>
+                    <input type="text" id="dropoff" name="dropoff" placeholder="e.g., Central Park, NYC" required>
 
-                    <button type="submit">Find Matching Rides</button>
+                    <button type="submit">Request Ride</button>
                 </form>
             </section>
 
+            <!-- ✅ Corrected Ride Offer Form -->
             <section id="offer-ride">
                 <h2>Offer a Ride</h2>
                 <form action="/offer_ride" method="POST" onsubmit="return showOfferAlert()">
                     <label for="pickup_offer">Pick-up Location:</label>
-                    <input type="text" id="pickup_offer" name="pickup_offer" placeholder="Enter pick-up location" required>
+                    <input type="text" id="pickup_offer" name="pickup_offer" placeholder="e.g., JFK Airport" required>
 
                     <label for="dropoff_offer">Drop-off Location:</label>
-                    <input type="text" id="dropoff_offer" name="dropoff_offer" placeholder="Enter drop-off location" required>
+                    <input type="text" id="dropoff_offer" name="dropoff_offer" placeholder="e.g., Brooklyn Bridge" required>
 
                     <button type="submit">Offer Ride</button>
                 </form>
+            </section>
+
+            <!-- ✅ Matching Rides Section -->
+            <section id="matching-rides">
+                <h2>Matching Rides Found</h2>
+                {% if matches %}
+                    <ul>
+                        {% for ride in matches %}
+                            <li>
+                                <strong>Pickup:</strong> {{ ride.pickup }} <br>
+                                <strong>Dropoff:</strong> {{ ride.dropoff }} <br>
+                                <strong>Offered by User #{{ ride.user_id }}</strong> <br>
+                                <form action="/request_match/{{ ride.id }}" method="post">
+                                    <button type="submit">Ride with this match</button>
+                                </form>
+                            </li>
+                            <hr>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No matches yet. Search to find rides!</p>
+                {% endif %}
             </section>
         </div>
     </main>
@@ -181,8 +209,12 @@
     </footer>
 
     <script>
+        function showRequestAlert() {
+            alert('Your ride request has been submitted! 🚕');
+            return true;
+        }
         function showOfferAlert() {
-            alert('Your ride offer has been posted!');
+            alert('Your ride offer has been posted! 🚗');
             return true;
         }
     </script>

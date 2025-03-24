@@ -1,24 +1,24 @@
+from flask_sqlalchemy import SQLAlchemy
 from backend import db
 
 class User(db.Model):
-    __tablename__ = 'user'
-    
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)  # store hashed password
+    username = db.Column(db.String(100), nullable=False, unique=True)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(200), nullable=False)
+    ride_offers = db.relationship('RideOffer', backref='user', lazy=True)
+    ride_requests = db.relationship('RideRequest', backref='user', lazy=True)
 
-class RideRequest(db.Model):
-    __tablename__ = 'ride_request'
-    
+class RideOffer(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     pickup = db.Column(db.String(100), nullable=False)
     dropoff = db.Column(db.String(100), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # add this line
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-class RideOffer(db.Model):
-    __tablename__ = 'ride_offer'
-    
+class RideRequest(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    pickup_offer = db.Column(db.String(100), nullable=False)
-    dropoff_offer = db.Column(db.String(100), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # add this line
+    pickup = db.Column(db.String(100), nullable=False)
+    dropoff = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    matched_ride_id = db.Column(db.Integer, db.ForeignKey('ride_offer.id'))
+    matched_ride = db.relationship('RideOffer', backref='matched_requests', foreign_keys=[matched_ride_id])

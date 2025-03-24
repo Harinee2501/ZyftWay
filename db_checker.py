@@ -1,32 +1,25 @@
-from backend import db, app
-from backend.models import User, RideOffer, RideRequest
+from backend import create_app, db
+from backend.models import User, RideOffer, RideRequest  # ✅ import all models
 
-def check_users():
-    users = User.query.all()
-    print("=== Users in Database ===")
-    if not users:
-        print("No users found.")
-    for user in users:
-        print(f"ID: {user.id}, Username: {user.username}")
+app = create_app()
 
-def check_ride_offers():
-    offers = RideOffer.query.all()
-    print("\n=== Offered Rides ===")
-    if not offers:
-        print("No ride offers found.")
-    for offer in offers:
-        print(f"ID: {offer.id}, From: {offer.pickup_offer}, To: {offer.dropoff_offer}, User ID: {offer.user_id}")
+def check_all_data():
+    with app.app_context():
+        print("=== Users ===")
+        users = User.query.all()
+        for user in users:
+            print(f"ID: {user.id}, Username: {user.username}, Email: {user.email}")
 
-def check_ride_requests():
-    requests = RideRequest.query.all()
-    print("\n=== Requested Rides ===")
-    if not requests:
-        print("No ride requests found.")
-    for request in requests:
-        print(f"ID: {request.id}, From: {request.pickup}, To: {request.dropoff}, User ID: {request.user_id}")
+        print("\n=== Offered Rides ===")
+        offered_rides = RideOffer.query.all()
+        for ride in offered_rides:
+            print(f"ID: {ride.id}, Pickup: {ride.pickup}, Dropoff: {ride.dropoff}, User ID: {ride.user_id}")
+
+        print("\n=== Requested Rides ===")
+        requested_rides = RideRequest.query.all()
+        for request in requested_rides:
+            print(f"ID: {request.id}, Pickup: {request.pickup}, Dropoff: {request.dropoff}, "
+                  f"User ID: {request.user_id}, Matched Ride ID: {request.matched_ride_id}")
 
 if __name__ == "__main__":
-    with app.app_context():
-        check_users()
-        check_ride_offers()
-        check_ride_requests()
+    check_all_data()
