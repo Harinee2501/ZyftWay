@@ -16,5 +16,5 @@ ZyftGo is a web-based ride optimization system where users can request and offer
 4. Open the application in your browser: `http://localhost:5000`
 
 ## Technologies Used
-- Backend: Flask, MongoDB
+- Backend: Flask, SQLite
 - Frontend: HTML, CSS, JavaScript
