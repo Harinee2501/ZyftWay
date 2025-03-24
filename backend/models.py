@@ -1,25 +1,24 @@
-from flask_pymongo import PyMongo
-from flask import Flask
+from backend import db
 
-app = Flask(__name__)
+class User(db.Model):
+    __tablename__ = 'user'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)  # store hashed password
 
-# MongoDB URI
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/zyftgo'
-mongo = PyMongo(app)
+class RideRequest(db.Model):
+    __tablename__ = 'ride_request'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    pickup = db.Column(db.String(100), nullable=False)
+    dropoff = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # add this line
 
-# Model for ride request
-class Ride:
-    def __init__(self, pickup, dropoff, user_id, driver_id=None):
-        self.pickup = pickup
-        self.dropoff = dropoff
-        self.user_id = user_id
-        self.driver_id = driver_id
-
-    def save(self):
-        ride_data = {
-            'pickup': self.pickup,
-            'dropoff': self.dropoff,
-            'user_id': self.user_id,
-            'driver_id': self.driver_id
-        }
-        mongo.db.rides.insert_one(ride_data)
+class RideOffer(db.Model):
+    __tablename__ = 'ride_offer'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    pickup_offer = db.Column(db.String(100), nullable=False)
+    dropoff_offer = db.Column(db.String(100), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # add this line

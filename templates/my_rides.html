@@ -1,0 +1,18 @@
+<h2>My Offered Rides</h2>
+<ul>
+{% for ride in offered_rides %}
+  <li>Pickup: {{ ride.pickup_offer }}, Drop-off: {{ ride.dropoff_offer }}</li>
+{% else %}
+  <p>No offered rides yet.</p>
+{% endfor %}
+</ul>
+
+<h2>My Requested Rides</h2>
+<ul>
+{% for ride in requested_rides %}
+  <li>Pickup: {{ ride.pickup }}, Drop-off: {{ ride.dropoff }}</li>
+{% else %}
+  <p>No requested rides yet.</p>
+{% endfor %}
+</ul>
+<a href="/">Back to Home</a>
