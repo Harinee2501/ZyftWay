@@ -12,6 +12,7 @@
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #f4f4f9, #e0f7fa);
+            scroll-behavior: smooth;
         }
         header {
             background-color: #2c3e50;
@@ -125,6 +126,47 @@
             margin-top: 50px;
             font-size: 15px;
         }
+        hr {
+            border: none;
+            height: 1px;
+            background-color: #ddd;
+            margin: 15px 0;
+        }
+        .ride-match {
+            background-color: #e8f4fc;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .match-success {
+            background-color: #e8f8f0;
+            border-left: 4px solid #2ecc71;
+        }
+        .match-pending {
+            background-color: #fff9e6;
+            border-left: 4px solid #f1c40f;
+        }
+        .match-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .match-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-matched {
+            background-color: #d5f5e3;
+            color: #27ae60;
+        }
+        .status-pending {
+            background-color: #fef9e7;
+            color: #f39c12;
+        }
         @media (max-width: 1024px) {
             .form-container {
                 flex-direction: column;
@@ -146,13 +188,14 @@
             <ul>
                 <li><a href="/my_rides">My Rides</a></li>
                 <li><a href="/logout">Logout</a></li>
+                <li><a href="/match_rides">Find Matches</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
         <div class="form-container">
-            <!-- ✅ Corrected Ride Request Form -->
+            <!-- Request a Ride Form -->
             <section id="ride-form">
                 <h2>Request a Ride</h2>
                 <form action="/request_ride" method="POST" onsubmit="return showRequestAlert()">
@@ -166,7 +209,7 @@
                 </form>
             </section>
 
-            <!-- ✅ Corrected Ride Offer Form -->
+            <!-- Offer a Ride Form -->
             <section id="offer-ride">
                 <h2>Offer a Ride</h2>
                 <form action="/offer_ride" method="POST" onsubmit="return showOfferAlert()">
@@ -180,25 +223,59 @@
                 </form>
             </section>
 
-            <!-- ✅ Matching Rides Section -->
+            <!-- Display Matching Rides -->
             <section id="matching-rides">
-                <h2>Matching Rides Found</h2>
+                <h2>Your Ride Matches</h2>
+                
+                <!-- Display confirmed matches -->
+                {% if user.ride_requests %}
+                    <h3>Your Requests</h3>
+                    {% for request in user.ride_requests %}
+                        <div class="ride-match {% if request.matched_ride_id %}match-success{% else %}match-pending{% endif %}">
+                            <div class="match-header">
+                                <strong>Your Request #{{ request.id }}</strong>
+                                <span class="match-status {% if request.matched_ride_id %}status-matched{% else %}status-pending{% endif %}">
+                                    {% if request.matched_ride_id %}MATCHED{% else %}PENDING{% endif %}
+                                </span>
+                            </div>
+                            <p><strong>From:</strong> {{ request.pickup }}</p>
+                            <p><strong>To:</strong> {{ request.dropoff }}</p>
+                            
+                            {% if request.matched_ride %}
+                                <div class="match-details">
+                                    <hr>
+                                    <p><strong>Matched with Offer #{{ request.matched_ride.id }}</strong></p>
+                                    <p><strong>Driver:</strong> User #{{ request.matched_ride.user_id }}</p>
+                                    <form action="/confirm_ride" method="post">
+                                        <input type="hidden" name="ride_id" value="{{ request.matched_ride.id }}">
+                                        <input type="hidden" name="pickup" value="{{ request.pickup }}">
+                                        <input type="hidden" name="dropoff" value="{{ request.dropoff }}">
+                                        <button type="submit">Confirm This Ride</button>
+                                    </form>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                <!-- Display available matches from search -->
                 {% if matches %}
+                    <h3>Available Rides</h3>
                     <ul>
                         {% for ride in matches %}
-                            <li>
+                            <li class="ride-match">
                                 <strong>Pickup:</strong> {{ ride.pickup }} <br>
                                 <strong>Dropoff:</strong> {{ ride.dropoff }} <br>
                                 <strong>Offered by User #{{ ride.user_id }}</strong> <br>
-                                <form action="/request_match/{{ ride.id }}" method="post">
-                                    <button type="submit">Ride with this match</button>
+                                <form action="/share_ride/{{ ride.id }}" method="post">
+                                    <button type="submit">Request This Ride</button>
                                 </form>
                             </li>
-                            <hr>
                         {% endfor %}
                     </ul>
-                {% else %}
-                    <p>No matches yet. Search to find rides!</p>
+                {% elif not user.ride_requests %}
+                    <p>No matches yet. Submit a request or offer to find rides!</p>
+                    <p>You can also <a href="/match_rides">click here</a> to search for matches.</p>
                 {% endif %}
             </section>
         </div>
@@ -210,15 +287,19 @@
 
     <script>
         function showRequestAlert() {
-            alert('Your ride request has been submitted! 🚕');
+            alert('Your ride request has been submitted! We\'ll look for matches.');
             return true;
         }
         function showOfferAlert() {
-            alert('Your ride offer has been posted! 🚗');
+            alert('Your ride offer has been posted! Other users can now find your ride.');
             return true;
         }
+        
+        // Auto-refresh matches every 30 seconds
+        setTimeout(function() {
+            window.location.reload();
+        }, 30000);
     </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
-
 </html>

@@ -1,5 +1,5 @@
 from backend import create_app, db
-from backend.models import User, RideOffer, RideRequest  # ✅ import all models
+from backend.models import User, RideOffer, RideRequest 
 
 app = create_app()
 

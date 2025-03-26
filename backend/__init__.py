@@ -9,19 +9,18 @@ def create_app():
     app = Flask(
         __name__,
         template_folder=os.path.join(base_dir, 'templates'),
-        static_folder=os.path.join(base_dir, 'static')
+        static_folder=os.path.join(base_dir, 'static'),
+        instance_relative_config=True
     )
 
-    # Database config
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(base_dir, 'zyftway.db')
+    # Use instance folder for DB
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'zyftway.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-    # Secret key for sessions
     app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')
 
     db.init_app(app)
 
-    # Import and register routes
     from backend.routes import init_app as init_routes
     init_routes(app)
 
